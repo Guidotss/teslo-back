@@ -25,13 +25,17 @@ jobs:
       run: |
         aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR_REPOSITORY_URL }}
 
+    - name: Set image tag
+      id: vars
+      run: echo "IMAGE_TAG=$(date +%s)" >> $GITHUB_OUTPUT
+
     - name: Build Docker image
       run: |
-        docker build . --file Dockerfile --tag ${{ secrets.AWS_ECR_REPOSITORY_URL }}/my-image-name:$(date +%s)
+        docker build . --file Dockerfile --tag ${{ secrets.AWS_ECR_REPOSITORY_URL }}/teslo-shop-backend:${{ steps.vars.outputs.IMAGE_TAG }}
 
     - name: Push Docker image to ECR
       run: |
-        docker push ${{ secrets.AWS_ECR_REPOSITORY_URL }}/my-image-name:$(date +%s)
+        docker push ${{ secrets.AWS_ECR_REPOSITORY_URL }}/teslo-shop-backend:${{ steps.vars.outputs.IMAGE_TAG }}
 
     
         
